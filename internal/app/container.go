@@ -29,7 +29,7 @@ type Container struct {
 }
 
 func NewContainer(ctx context.Context, cfg config.Config) (*Container, error) {
-	db, err := sql.Open("mysql", cfg.MySQLDSN)
+	db, err := sql.Open("mysql", cfg.MySQLDSN())
 	if err != nil {
 		return nil, fmt.Errorf("open mysql: %w", err)
 	}
@@ -39,7 +39,7 @@ func NewContainer(ctx context.Context, cfg config.Config) (*Container, error) {
 	}
 
 	rdb := redis.NewClient(&redis.Options{
-		Addr: cfg.RedisAddr,
+		Addr: cfg.RedisAddr(),
 	})
 	if err := rdb.Ping(ctx).Err(); err != nil {
 		return nil, fmt.Errorf("ping redis: %w", err)

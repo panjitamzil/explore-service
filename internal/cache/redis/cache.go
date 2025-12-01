@@ -10,11 +10,17 @@ import (
 )
 
 type LikedCountCache struct {
-	client *redis.Client
+	client redisCmdable
 	prefix string
 }
 
-func NewLikedCountCache(client *redis.Client, prefix string) *LikedCountCache {
+type redisCmdable interface {
+	Get(ctx context.Context, key string) *redis.StringCmd
+	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) *redis.StatusCmd
+	Del(ctx context.Context, keys ...string) *redis.IntCmd
+}
+
+func NewLikedCountCache(client redisCmdable, prefix string) *LikedCountCache {
 	if prefix == "" {
 		prefix = "liked_count:"
 	}

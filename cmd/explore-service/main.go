@@ -18,6 +18,10 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer cancel()
 
+	if err := config.LoadDotEnv(); err != nil {
+		log.Printf("warning: failed to load .env: %v", err)
+	}
+
 	cfg := config.FromEnv()
 
 	container, err := app.NewContainer(ctx, cfg)
