@@ -9,11 +9,48 @@ import (
 )
 
 type DecisionRepository struct {
-	db *sql.DB
+	db dbExecutor
 }
 
 func NewDecisionRepository(db *sql.DB) *DecisionRepository {
-	return &DecisionRepository{db: db}
+	return &DecisionRepository{db: sqlDB{db: db}}
+}
+
+type dbExecutor interface {
+	ExecContext(ctx context.Context, query string, args ...any) (sql.Result, error)
+	QueryContext(ctx context.Context, query string, args ...any) (rows, error)
+	QueryRowContext(ctx context.Context, query string, args ...any) rowScanner
+}
+
+type rows interface {
+	Next() bool
+	Scan(dest ...any) error
+	Close() error
+	Err() error
+}
+
+type rowScanner interface {
+	Scan(dest ...any) error
+}
+
+type sqlDB struct {
+	db *sql.DB
+}
+
+func (s sqlDB) ExecContext(ctx context.Context, query string, args ...any) (sql.Result, error) {
+	return s.db.ExecContext(ctx, query, args...)
+}
+
+func (s sqlDB) QueryContext(ctx context.Context, query string, args ...any) (rows, error) {
+	r, err := s.db.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	return r, nil
+}
+
+func (s sqlDB) QueryRowContext(ctx context.Context, query string, args ...any) rowScanner {
+	return s.db.QueryRowContext(ctx, query, args...)
 }
 
 func (r *DecisionRepository) PutDecision(ctx context.Context, d *decision.Decision) error {

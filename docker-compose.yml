@@ -42,9 +42,14 @@ services:
       redis:
         condition: service_healthy
     environment:
-      GRPC_PORT: "50051"
-      MYSQL_DSN: "root:password@tcp(mysql:3306)/explore?parseTime=true&charset=utf8mb4&collation=utf8mb4_unicode_ci"
-      REDIS_ADDR: "redis:6379"
+      GRPC_PORT: "${GRPC_PORT:-50051}"
+      MYSQL_HOST: "${MYSQL_HOST:-mysql}"
+      MYSQL_PORT: "${MYSQL_PORT:-3306}"
+      MYSQL_USER: "${MYSQL_USER:-root}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD:-password}"
+      MYSQL_DB: "${MYSQL_DB:-explore}"
+      REDIS_HOST: "${REDIS_HOST:-redis}"
+      REDIS_PORT: "${REDIS_PORT:-6379}"
     ports:
       - "50051:50051"
 
