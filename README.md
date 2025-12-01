@@ -16,7 +16,7 @@ It is a clean, scalable, gRPC-based backend with cursor pagination, Redis cachin
 ## Requirements
 - Go 1.22+
 - Docker & Docker Compose (for MySQL/Redis stack)
-- `protoc`, `protoc-gen-go`, `protoc-gen-go-grpc` (if regenerating stubs)
+- `protoc`, `protoc-gen-go`, `protoc-gen-go-grpc`
 
 ## Run
 1) Copy env:
