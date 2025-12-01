@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package explore;
+
+option go_package = "explore-service/pkg/proto/explore;explorepb";
+
+service ExploreService {
+  rpc ListLikedYou(ListLikedYouRequest) returns (ListLikedYouResponse);
+  rpc ListNewLikedYou(ListLikedYouRequest) returns (ListLikedYouResponse);
+  rpc CountLikedYou(CountLikedYouRequest) returns (CountLikedYouResponse);
+  rpc PutDecision(PutDecisionRequest) returns (PutDecisionResponse);
+}
+
+message ListLikedYouRequest {
+  string recipient_user_id = 1;
+  optional string pagination_token = 2;
+  optional uint32 page_size = 3;
+}
+
+message ListLikedYouResponse {
+  message Liker {
+    string actor_id = 1;
+    uint64 unix_timestamp = 2;
+  }
+  repeated Liker likers = 1;
+  optional string next_pagination_token = 2;
+}
+
+message CountLikedYouRequest {
+  string recipient_user_id = 1;
+}
+
+message CountLikedYouResponse {
+  uint64 count = 1;
+}
+
+message PutDecisionRequest {
+  string actor_user_id = 1;
+  string recipient_user_id = 2;
+  bool liked_recipient = 3;
+}
+
+message PutDecisionResponse {
+  bool mutual_likes = 1;
+}
