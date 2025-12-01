@@ -1,10 +1,52 @@
 version: "3.9"
 
 services:
+  mysql:
+    image: mysql:8.0
+    container_name: explore_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: explore
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./migrations:/docker-entrypoint-initdb.d
+    command: [
+      "--character-set-server=utf8mb4",
+      "--collation-server=utf8mb4_unicode_ci"
+    ]
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -ppassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: explore_redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
   app:
     build: .
     container_name: explore_service
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       GRPC_PORT: "50051"
+      MYSQL_DSN: "root:password@tcp(mysql:3306)/explore?parseTime=true&charset=utf8mb4&collation=utf8mb4_unicode_ci"
+      REDIS_ADDR: "redis:6379"
     ports:
       - "50051:50051"
+
+volumes:
+  mysql_data:

@@ -3,24 +3,24 @@ package decision
 import "errors"
 
 type Decision struct {
-	ActorID        string
-	RecipientID    string
+	ActorId        string
+	RecipientId    string
 	LikedRecipient bool
 	UnixTimestamp  uint64
 }
 
 type Liker struct {
-	ActorID       string
+	ActorId       string
 	UnixTimestamp uint64
 }
 
 type Cursor struct {
 	LastUnixTimestamp uint64
-	LastActorID       string
+	LastActorId       string
 }
 
 func (c Cursor) IsZero() bool {
-	return c.LastUnixTimestamp == 0 && c.LastActorID == ""
+	return c.LastUnixTimestamp == 0 && c.LastActorId == ""
 }
 
 var (
@@ -44,8 +44,8 @@ func NewDecision(actorID, recipientID string, liked bool, ts uint64) (*Decision,
 	}
 
 	return &Decision{
-		ActorID:        actorID,
-		RecipientID:    recipientID,
+		ActorId:        actorID,
+		RecipientId:    recipientID,
 		LikedRecipient: liked,
 		UnixTimestamp:  ts,
 	}, nil

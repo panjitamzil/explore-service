@@ -28,22 +28,22 @@ func (r *DecisionRepository) PutDecision(_ context.Context, d *decision.Decision
 	defer r.mu.Unlock()
 
 	cp := *d
-	r.decisions[r.key(d.ActorID, d.RecipientID)] = &cp
+	r.decisions[r.key(d.ActorId, d.RecipientId)] = &cp
 	return nil
 }
 
-func (r *DecisionRepository) GetDecision(_ context.Context, actorID, recipientID string) (*decision.Decision, error) {
+func (r *DecisionRepository) GetDecision(ctx context.Context, actorId, recipientId string) (*decision.Decision, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	if dec, ok := r.decisions[r.key(actorID, recipientID)]; ok {
+	if dec, ok := r.decisions[r.key(actorId, recipientId)]; ok {
 		cp := *dec
 		return &cp, nil
 	}
 	return nil, decision.ErrNotFound
 }
 
-func (r *DecisionRepository) ListLikedYou(ctx context.Context, recipientID string, cursor decision.Cursor, limit int) ([]decision.Liker, decision.Cursor, error) {
+func (r *DecisionRepository) ListLikedYou(ctx context.Context, recipientId string, cursor decision.Cursor, limit int) ([]decision.Liker, decision.Cursor, error) {
 	_ = ctx
 
 	r.mu.RLock()
@@ -51,9 +51,9 @@ func (r *DecisionRepository) ListLikedYou(ctx context.Context, recipientID strin
 
 	likers := make([]decision.Liker, 0, len(r.decisions))
 	for _, d := range r.decisions {
-		if d.RecipientID == recipientID && d.LikedRecipient {
+		if d.RecipientId == recipientId && d.LikedRecipient {
 			likers = append(likers, decision.Liker{
-				ActorID:       d.ActorID,
+				ActorId:       d.ActorId,
 				UnixTimestamp: d.UnixTimestamp,
 			})
 		}
@@ -63,7 +63,7 @@ func (r *DecisionRepository) ListLikedYou(ctx context.Context, recipientID strin
 	return likers, next, nil
 }
 
-func (r *DecisionRepository) ListNewLikedYou(ctx context.Context, recipientID string, cursor decision.Cursor, limit int) ([]decision.Liker, decision.Cursor, error) {
+func (r *DecisionRepository) ListNewLikedYou(ctx context.Context, recipientId string, cursor decision.Cursor, limit int) ([]decision.Liker, decision.Cursor, error) {
 	_ = ctx
 
 	r.mu.RLock()
@@ -71,14 +71,14 @@ func (r *DecisionRepository) ListNewLikedYou(ctx context.Context, recipientID st
 
 	likers := make([]decision.Liker, 0, len(r.decisions))
 	for _, d := range r.decisions {
-		if d.RecipientID != recipientID || !d.LikedRecipient {
+		if d.RecipientId != recipientId || !d.LikedRecipient {
 			continue
 		}
-		if other, ok := r.decisions[r.key(recipientID, d.ActorID)]; ok && other.LikedRecipient {
+		if other, ok := r.decisions[r.key(recipientId, d.ActorId)]; ok && other.LikedRecipient {
 			continue
 		}
 		likers = append(likers, decision.Liker{
-			ActorID:       d.ActorID,
+			ActorId:       d.ActorId,
 			UnixTimestamp: d.UnixTimestamp,
 		})
 	}
@@ -87,7 +87,7 @@ func (r *DecisionRepository) ListNewLikedYou(ctx context.Context, recipientID st
 	return likers, next, nil
 }
 
-func (r *DecisionRepository) CountLikedYou(ctx context.Context, recipientID string) (uint64, error) {
+func (r *DecisionRepository) CountLikedYou(ctx context.Context, recipientId string) (uint64, error) {
 	_ = ctx
 
 	r.mu.RLock()
@@ -95,7 +95,7 @@ func (r *DecisionRepository) CountLikedYou(ctx context.Context, recipientID stri
 
 	var count uint64
 	for _, d := range r.decisions {
-		if d.RecipientID == recipientID && d.LikedRecipient {
+		if d.RecipientId == recipientId && d.LikedRecipient {
 			count++
 		}
 	}
@@ -105,7 +105,7 @@ func (r *DecisionRepository) CountLikedYou(ctx context.Context, recipientID stri
 func paginate(likers []decision.Liker, cursor decision.Cursor, limit int) ([]decision.Liker, decision.Cursor) {
 	sort.Slice(likers, func(i, j int) bool {
 		if likers[i].UnixTimestamp == likers[j].UnixTimestamp {
-			return likers[i].ActorID < likers[j].ActorID
+			return likers[i].ActorId < likers[j].ActorId
 		}
 		return likers[i].UnixTimestamp > likers[j].UnixTimestamp
 	})
@@ -118,7 +118,7 @@ func paginate(likers []decision.Liker, cursor decision.Cursor, limit int) ([]dec
 				filtered = append(filtered, l)
 				continue
 			}
-			if l.UnixTimestamp == cursor.LastUnixTimestamp && l.ActorID > cursor.LastActorID {
+			if l.UnixTimestamp == cursor.LastUnixTimestamp && l.ActorId > cursor.LastActorId {
 				filtered = append(filtered, l)
 			}
 		}
@@ -128,7 +128,7 @@ func paginate(likers []decision.Liker, cursor decision.Cursor, limit int) ([]dec
 	if len(filtered) > limit {
 		next = decision.Cursor{
 			LastUnixTimestamp: filtered[limit-1].UnixTimestamp,
-			LastActorID:       filtered[limit-1].ActorID,
+			LastActorId:       filtered[limit-1].ActorId,
 		}
 		filtered = filtered[:limit]
 	}
