@@ -20,21 +20,18 @@ func NewExploreHandler(svc *decision.Service) *ExploreHandler {
 	return &ExploreHandler{svc: svc}
 }
 
-func (h *ExploreHandler) PutDecision(
-	ctx context.Context,
-	req *explorepb.PutDecisionRequest,
-) (*explorepb.PutDecisionResponse, error) {
-	actorID := req.GetActorUserId()
-	recipientID := req.GetRecipientUserId()
+func (h *ExploreHandler) PutDecision(ctx context.Context, req *explorepb.PutDecisionRequest) (*explorepb.PutDecisionResponse, error) {
+	actorId := req.GetActorUserId()
+	recipientId := req.GetRecipientUserId()
 	liked := req.GetLikedRecipient()
 
-	if actorID == "" || recipientID == "" {
+	if actorId == "" || recipientId == "" {
 		return nil, status.Error(codes.InvalidArgument, "actor_user_id and recipient_user_id must not be empty")
 	}
 
 	ts := uint64(time.Now().Unix())
 
-	mutual, err := h.svc.PutDecision(ctx, actorID, recipientID, liked, ts)
+	mutual, err := h.svc.PutDecision(ctx, actorId, recipientId, liked, ts)
 	if err != nil {
 		switch err {
 		case decision.ErrEmptyActorID, decision.ErrEmptyRecipientID, decision.ErrSameUser:
@@ -49,10 +46,7 @@ func (h *ExploreHandler) PutDecision(
 	}, nil
 }
 
-func (h *ExploreHandler) ListLikedYou(
-	ctx context.Context,
-	req *explorepb.ListLikedYouRequest,
-) (*explorepb.ListLikedYouResponse, error) {
+func (h *ExploreHandler) ListLikedYou(ctx context.Context, req *explorepb.ListLikedYouRequest) (*explorepb.ListLikedYouResponse, error) {
 	recipientID := req.GetRecipientUserId()
 	if recipientID == "" {
 		return nil, status.Error(codes.InvalidArgument, "recipient_user_id must not be empty")
@@ -78,7 +72,7 @@ func (h *ExploreHandler) ListLikedYou(
 
 	for _, l := range likers {
 		resp.Likers = append(resp.Likers, &explorepb.ListLikedYouResponse_Liker{
-			ActorId:       l.ActorID,
+			ActorId:       l.ActorId,
 			UnixTimestamp: l.UnixTimestamp,
 		})
 	}
@@ -92,12 +86,9 @@ func (h *ExploreHandler) ListLikedYou(
 	return resp, nil
 }
 
-func (h *ExploreHandler) ListNewLikedYou(
-	ctx context.Context,
-	req *explorepb.ListLikedYouRequest,
-) (*explorepb.ListLikedYouResponse, error) {
-	recipientID := req.GetRecipientUserId()
-	if recipientID == "" {
+func (h *ExploreHandler) ListNewLikedYou(ctx context.Context, req *explorepb.ListLikedYouRequest) (*explorepb.ListLikedYouResponse, error) {
+	recipientId := req.GetRecipientUserId()
+	if recipientId == "" {
 		return nil, status.Error(codes.InvalidArgument, "recipient_user_id must not be empty")
 	}
 
@@ -107,7 +98,7 @@ func (h *ExploreHandler) ListNewLikedYou(
 	}
 
 	pageSize := int(req.GetPageSize())
-	likers, nextCursor, err := h.svc.ListNewLikedYou(ctx, recipientID, cursor, pageSize)
+	likers, nextCursor, err := h.svc.ListNewLikedYou(ctx, recipientId, cursor, pageSize)
 	if err != nil {
 		if err == decision.ErrEmptyRecipientID {
 			return nil, status.Error(codes.InvalidArgument, err.Error())
@@ -121,7 +112,7 @@ func (h *ExploreHandler) ListNewLikedYou(
 
 	for _, l := range likers {
 		resp.Likers = append(resp.Likers, &explorepb.ListLikedYouResponse_Liker{
-			ActorId:       l.ActorID,
+			ActorId:       l.ActorId,
 			UnixTimestamp: l.UnixTimestamp,
 		})
 	}
@@ -135,16 +126,13 @@ func (h *ExploreHandler) ListNewLikedYou(
 	return resp, nil
 }
 
-func (h *ExploreHandler) CountLikedYou(
-	ctx context.Context,
-	req *explorepb.CountLikedYouRequest,
-) (*explorepb.CountLikedYouResponse, error) {
-	recipientID := req.GetRecipientUserId()
-	if recipientID == "" {
+func (h *ExploreHandler) CountLikedYou(ctx context.Context, req *explorepb.CountLikedYouRequest) (*explorepb.CountLikedYouResponse, error) {
+	recipientId := req.GetRecipientUserId()
+	if recipientId == "" {
 		return nil, status.Error(codes.InvalidArgument, "recipient_user_id must not be empty")
 	}
 
-	count, err := h.svc.CountLikedYou(ctx, recipientID)
+	count, err := h.svc.CountLikedYou(ctx, recipientId)
 	if err != nil {
 		if err == decision.ErrEmptyRecipientID {
 			return nil, status.Error(codes.InvalidArgument, err.Error())

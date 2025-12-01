@@ -10,7 +10,7 @@ import (
 
 type cursorToken struct {
 	Ts      uint64 `json:"ts"`
-	ActorID string `json:"actor_id"`
+	ActorId string `json:"actor_id"`
 }
 
 func encodeCursorToToken(c decision.Cursor) (string, error) {
@@ -20,7 +20,7 @@ func encodeCursorToToken(c decision.Cursor) (string, error) {
 
 	tok := cursorToken{
 		Ts:      c.LastUnixTimestamp,
-		ActorID: c.LastActorID,
+		ActorId: c.LastActorId,
 	}
 
 	data, err := json.Marshal(tok)
@@ -48,6 +48,6 @@ func decodeTokenToCursor(token string) (decision.Cursor, error) {
 
 	return decision.Cursor{
 		LastUnixTimestamp: t.Ts,
-		LastActorID:       t.ActorID,
+		LastActorId:       t.ActorId,
 	}, nil
 }

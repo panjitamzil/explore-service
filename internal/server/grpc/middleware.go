@@ -33,5 +33,6 @@ func codeToString(code codes.Code) string {
 	if code == codes.OK {
 		return "OK"
 	}
+
 	return code.String()
 }
