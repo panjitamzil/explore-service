@@ -34,7 +34,7 @@ func (h *ExploreHandler) PutDecision(ctx context.Context, req *explorepb.PutDeci
 	mutual, err := h.svc.PutDecision(ctx, actorId, recipientId, liked, ts)
 	if err != nil {
 		switch err {
-		case decision.ErrEmptyActorID, decision.ErrEmptyRecipientID, decision.ErrSameUser:
+		case decision.ErrEmptyActorId, decision.ErrEmptyRecipientId, decision.ErrSameUser:
 			return nil, status.Error(codes.InvalidArgument, err.Error())
 		default:
 			return nil, status.Errorf(codes.Internal, "failed to put decision: %v", err)
@@ -60,7 +60,7 @@ func (h *ExploreHandler) ListLikedYou(ctx context.Context, req *explorepb.ListLi
 	pageSize := int(req.GetPageSize())
 	likers, nextCursor, err := h.svc.ListLikedYou(ctx, recipientID, cursor, pageSize)
 	if err != nil {
-		if err == decision.ErrEmptyRecipientID {
+		if err == decision.ErrEmptyRecipientId {
 			return nil, status.Error(codes.InvalidArgument, err.Error())
 		}
 		return nil, status.Errorf(codes.Internal, "failed to list liked you: %v", err)
@@ -100,7 +100,7 @@ func (h *ExploreHandler) ListNewLikedYou(ctx context.Context, req *explorepb.Lis
 	pageSize := int(req.GetPageSize())
 	likers, nextCursor, err := h.svc.ListNewLikedYou(ctx, recipientId, cursor, pageSize)
 	if err != nil {
-		if err == decision.ErrEmptyRecipientID {
+		if err == decision.ErrEmptyRecipientId {
 			return nil, status.Error(codes.InvalidArgument, err.Error())
 		}
 		return nil, status.Errorf(codes.Internal, "failed to list new liked you: %v", err)
@@ -134,7 +134,7 @@ func (h *ExploreHandler) CountLikedYou(ctx context.Context, req *explorepb.Count
 
 	count, err := h.svc.CountLikedYou(ctx, recipientId)
 	if err != nil {
-		if err == decision.ErrEmptyRecipientID {
+		if err == decision.ErrEmptyRecipientId {
 			return nil, status.Error(codes.InvalidArgument, err.Error())
 		}
 		return nil, status.Errorf(codes.Internal, "failed to count liked you: %v", err)

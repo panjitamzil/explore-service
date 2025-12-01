@@ -58,7 +58,7 @@ func (s *Service) PutDecision(ctx context.Context, actorID, recipientID string, 
 
 func (s *Service) ListLikedYou(ctx context.Context, recipientID string, cursor Cursor, limit int) ([]Liker, Cursor, error) {
 	if recipientID == "" {
-		return nil, Cursor{}, ErrEmptyRecipientID
+		return nil, Cursor{}, ErrEmptyRecipientId
 	}
 	if limit <= 0 {
 		limit = defaultPageSize
@@ -76,7 +76,7 @@ func (s *Service) ListLikedYou(ctx context.Context, recipientID string, cursor C
 
 func (s *Service) ListNewLikedYou(ctx context.Context, recipientID string, cursor Cursor, limit int) ([]Liker, Cursor, error) {
 	if recipientID == "" {
-		return nil, Cursor{}, ErrEmptyRecipientID
+		return nil, Cursor{}, ErrEmptyRecipientId
 	}
 	if limit <= 0 {
 		limit = defaultPageSize
@@ -94,7 +94,7 @@ func (s *Service) ListNewLikedYou(ctx context.Context, recipientID string, curso
 
 func (s *Service) CountLikedYou(ctx context.Context, recipientID string) (uint64, error) {
 	if recipientID == "" {
-		return 0, ErrEmptyRecipientID
+		return 0, ErrEmptyRecipientId
 	}
 
 	if s.cache != nil {

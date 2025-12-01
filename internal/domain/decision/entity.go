@@ -24,28 +24,28 @@ func (c Cursor) IsZero() bool {
 }
 
 var (
-	ErrEmptyActorID     = errors.New("actor id must not be empty")
-	ErrEmptyRecipientID = errors.New("recipient id must not be empty")
+	ErrEmptyActorId     = errors.New("actor id must not be empty")
+	ErrEmptyRecipientId = errors.New("recipient id must not be empty")
 	ErrSameUser         = errors.New("actor and recipient must not be the same user")
 	ErrNotFound         = errors.New("decision not found")
 )
 
-func NewDecision(actorID, recipientID string, liked bool, ts uint64) (*Decision, error) {
-	if actorID == "" {
-		return nil, ErrEmptyActorID
+func NewDecision(actorId, recipientId string, liked bool, ts uint64) (*Decision, error) {
+	if actorId == "" {
+		return nil, ErrEmptyActorId
 	}
 
-	if recipientID == "" {
-		return nil, ErrEmptyRecipientID
+	if recipientId == "" {
+		return nil, ErrEmptyRecipientId
 	}
 
-	if actorID == recipientID {
+	if actorId == recipientId {
 		return nil, ErrSameUser
 	}
 
 	return &Decision{
-		ActorId:        actorID,
-		RecipientId:    recipientID,
+		ActorId:        actorId,
+		RecipientId:    recipientId,
 		LikedRecipient: liked,
 		UnixTimestamp:  ts,
 	}, nil
