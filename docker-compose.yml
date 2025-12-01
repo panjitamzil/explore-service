@@ -1,0 +1,10 @@
+version: "3.9"
+
+services:
+  app:
+    build: .
+    container_name: explore_service
+    environment:
+      GRPC_PORT: "50051"
+    ports:
+      - "50051:50051"
